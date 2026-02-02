@@ -13,9 +13,10 @@ class UpdateDebugger
     ordered_step = "#{@log_number}_#{step}".to_sym
     @sentry_logs[ordered_step] = Time.zone.now
     @log_number += 1
-    Sentry.capture_message "#{@course.title} update: #{step}",
-                           level: 'warning',
-                           extra: { logs: @sentry_logs }
+    Sentry.capture_message("#{@course.title} update: #{step}") do |scope|
+      scope.set_level(:warning)
+      scope.set_extras(logs: @sentry_logs)
+    end
   end
 
   def debug?

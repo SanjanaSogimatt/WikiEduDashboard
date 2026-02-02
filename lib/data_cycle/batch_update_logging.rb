@@ -92,11 +92,12 @@ module BatchUpdateLogging
     end
 
     return unless to_sentry
-    Sentry.capture_message message,
-                           level: 'info',
-                           tags: { update_time: total_time },
-                           extra: { exact_update_time: (@end_time - @start_time),
-                                    logs: @sentry_logs }
+    Sentry.capture_message(message) do |scope|
+      scope.set_level(:info)
+      scope.set_tags(update_time: total_time)
+      scope.set_extras(exact_update_time: (@end_time - @start_time),
+                       logs: @sentry_logs)
+    end
   end
 
   def debug?
