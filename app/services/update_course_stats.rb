@@ -132,8 +132,9 @@ class UpdateCourseStats
   end
 
   def log_error(error)
-    Sentry.capture_message "#{@course.title} update caches error: #{error}",
-                           level: 'error'
+    Sentry.capture_message("#{@course.title} update caches error: #{error}") do |scope|
+      scope.set_level(:error)
+    end
   end
 
   TEN_MINUTES = 600
