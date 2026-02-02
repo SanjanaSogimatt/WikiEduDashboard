@@ -65,7 +65,12 @@ module BatchUpdateLogging
   def log_message(message)
     Rails.logger.debug message
     @sentry_logs << "#{Time.zone.now} - #{message}"
-    Sentry.capture_message(message, level: 'warning', extra: { logs: @sentry_logs }) if debug?
+    if debug?
+      Sentry.capture_message(message) do |scope|
+        scope.set_level(:warning)
+        scope.set_extras(logs: @sentry_logs)
+      end
+    end
   end
 
   def log_start_of_update(message)
